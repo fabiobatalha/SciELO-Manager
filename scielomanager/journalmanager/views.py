@@ -16,7 +16,6 @@ from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
-from django.db.models import Q
 
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
