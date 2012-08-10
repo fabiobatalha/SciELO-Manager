@@ -32,6 +32,8 @@ from scielomanager.tools import get_referer_view
 from scielomanager.tools import PendingPostData
 from scielomanager.journalmanager.models import get_user_collections
 
+import reversion
+
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
@@ -406,10 +408,12 @@ def edit_journal_status(request, journal_id = None):
                               'user_collections': user_collections,
                               'journal_history': journal_history,
                               'journal': journal,
-                              }, context_instance = RequestContext(request))
+                              }, context_instance=RequestContext(request))
+
 
 @permission_required('journalmanager.change_journal', login_url=settings.LOGIN_URL)
-def add_journal(request, journal_id = None):
+@reversion.create_revision()
+def add_journal(request, journal_id=None):
     """
     Handles new and existing journals
     """
@@ -419,7 +423,7 @@ def add_journal(request, journal_id = None):
     if  journal_id is None:
         journal = models.Journal()
     else:
-        journal = get_object_or_404(models.Journal, id = journal_id)
+        journal = get_object_or_404(models.Journal, id=journal_id)
 
     form_hash = None
 

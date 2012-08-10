@@ -11,6 +11,8 @@ from journalmanager import choices
 from scielo_extensions import formfields as fields
 from django.forms.util import ErrorList
 
+import reversion
+
 class UserCollectionContext(ModelForm):
     """
     Inherit from this base class if you have a ``collections`` attribute
@@ -36,6 +38,7 @@ class UserCollectionContext(ModelForm):
             self.fields['collections'].queryset = models.Collection.objects.filter(
                 pk__in = (collection.collection.pk for collection in collections_qset))
 
+
 class JournalForm(UserCollectionContext):
     print_issn = fields.ISSNField(max_length=9, required=False)
     eletronic_issn = fields.ISSNField(max_length=9, required=False)
@@ -50,14 +53,17 @@ class JournalForm(UserCollectionContext):
     def __init__(self, *args, **kwargs):
         super(JournalForm, self).__init__(*args, **kwargs)
 
+    @reversion.create_revision()
     def save_all(self, creator):
-        journal = self.save(commit=False)
+        with reversion.create_revision():
+            journal = self.save(commit=False)
         journal.creator = creator
 
         if not journal.pub_status_changed_by_id:
             journal.pub_status_changed_by = creator
 
-        journal.save()
+        with reversion.create_revision():
+            journal.save()
         self.save_m2m()
         return journal
 

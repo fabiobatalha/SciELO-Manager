@@ -122,6 +122,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
+    'reversion.middleware.RevisionMiddleware',
 )
 
 ROOT_URLCONF = 'scielomanager.urls'
@@ -149,6 +151,7 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'tastypie',
     'django_assets',
+    'reversion',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

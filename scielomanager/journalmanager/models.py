@@ -524,6 +524,11 @@ class Article(caching.base.CachingMixin, models.Model):
 
 
 ####
+# Models Registration for reversion plugin
+####
+
+
+####
 # Pre and Post save to handle `Journal.pub_status` data modification.
 ####
 
