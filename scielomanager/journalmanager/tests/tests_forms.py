@@ -620,9 +620,6 @@ class JournalFormTests(WebTest):
                              'title-TOTAL_FORMS',
                              'title-INITIAL_FORMS',
                              'title-MAX_NUM_FORMS',
-                             'studyarea-TOTAL_FORMS',
-                             'studyarea-INITIAL_FORMS',
-                             'studyarea-MAX_NUM_FORMS',
                              'mission-TOTAL_FORMS',
                              'mission-INITIAL_FORMS',
                              'mission-MAX_NUM_FORMS',
@@ -696,6 +693,7 @@ class JournalFormTests(WebTest):
         use_license = modelfactories.UseLicenseFactory.create()
         language = modelfactories.LanguageFactory.create()
         subject_category = modelfactories.SubjectCategoryFactory.create()
+        study_area = modelfactories.StudyAreaFactory.create()
 
         form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
 
@@ -736,6 +734,7 @@ class JournalFormTests(WebTest):
         form['journal-languages'] = [language.pk]
         form['journal-abstract_keyword_languages'] = [language.pk]
         form.set('journal-subject_categories', str(subject_category.pk))
+        form.set('journal-study_areas', str(study_area.pk))
         form['journal-is_indexed_scie'] = True
         form['journal-is_indexed_ssci'] = False
         form['journal-is_indexed_aehci'] = True

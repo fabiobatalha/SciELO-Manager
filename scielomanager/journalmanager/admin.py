@@ -149,3 +149,11 @@ class JournalPublicationEventsAdmin(admin.ModelAdmin):
     search_fields = ['journal',]
 
 admin.site.register(JournalPublicationEvents, JournalPublicationEventsAdmin)
+
+
+class StudyAreaAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return StudyArea.nocacheobjects
+
+admin.site.register(StudyArea, StudyAreaAdmin)
