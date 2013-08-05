@@ -1,0 +1,76 @@
+{% extends "base_list_lv0.html" %}
+{% load i18n %}
+{% load static %}
+{% load scielo_common %}
+{% load inctag_toolbars %}
+
+{% block page_title %}{% trans "Users" %}{% endblock %}
+
+{% block content %}
+<div class="span10" ng-app="autorslist">
+  <h3>{% trans 'Team' %} - {{ collection.name }}</h3>
+  <div ng-controller="TypeaheadCtrl">
+    <form id="add-user"
+          method="post"
+          action="{% url collection_users.add collection.id %}"
+          enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="text"
+             name="query"
+             placeholder="select a user"
+             ng-model="query"
+             typeahead="user for user in users | filter:$viewValue" />
+      <button class="btn">{% trans 'add' %}</button>
+    </form>
+  </div>
+  <table class="table table-condensed _listings">
+    <thead>
+      <tr>
+        <th>{% trans "Username" %}</th>
+        <th>{% trans "E-mail" %}</th>
+        <th>{% trans "Full name" %}</th>
+        <th>{% trans "Group" %}</th>
+        <th>{% trans "Actions" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in collection_users.object_list %}
+      <tr id="{{ user.pk }}">
+        <td>
+          <h4>{{ user.username }}</h4>
+        </td>
+        <td>
+          <a href="mailto:{{ user.get_profile.email }}">
+            {{ user.get_profile.email }}
+          </a>
+        </td>
+        <td>{{ user.first_name }} {{ user.last_name }}</td>
+        <td>{{ user.groups.all|join:", " }}</td>
+        <td>
+            <a href="{% url collection_users.remove collection.pk user.pk %}"
+               class="btn btn-mini btn-danger">
+              {% trans 'Remove' %}
+            </a>
+        </td>
+      </tr>
+      {% endfor %}
+    <tbody>
+  </table>
+  {% pagination collection_users %}
+</div>
+{% endblock %}
+
+{% block extrafooter %}
+{{ block.super }}
+<script language="javascript">
+  angular.module('autorslist', ['ui.bootstrap']);
+  function TypeaheadCtrl($scope, $http) {
+    $http.get('{% url ajx.ajx_list_users %}').success(function(data){
+      $scope.users = data;
+    })
+
+
+  };
+
+</script>
+{% endblock %}
