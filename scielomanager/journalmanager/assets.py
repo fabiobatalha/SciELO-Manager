@@ -5,7 +5,7 @@
 from django_assets import Bundle, register
 
 base_bundle = Bundle('../static/js/jquery/jquery-1.7.1.js',
-                     '../static/js/jquery/jquery-ui.js',)
+                     '../static/js/jquery/jquery-ui.js')
 
 plugins_bundle = Bundle('../static/js/jquery/datepicker.js',
                         '../static/js/jquery/jquery.asmselect.js',
@@ -26,10 +26,10 @@ js = Bundle(base_bundle, plugins_bundle, app_bundle, filters='yui_js', output='b
 register('js', js)
 
 css = Bundle('../static/css/bootstrap.css',
-            '../static/css/bootstrap-responsive.css',
-            '../static/css/jquery.asmselect.css',
-            '../static/css/jquery-ui.css',
-            '../static/css/jquery.asmselect.css',
-            '../static/css/style.css', filters='yui_css', output='bundle.min.css')
+             '../static/css/bootstrap-responsive.css',
+             '../static/css/jquery.asmselect.css',
+             '../static/css/jquery-ui.css',
+             '../static/css/jquery.asmselect.css',
+             '../static/css/style.css', filters='yui_css', output='bundle.min.css')
 
 register('css', css)

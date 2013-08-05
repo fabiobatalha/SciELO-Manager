@@ -318,14 +318,21 @@ class Collection(caching.base.CachingMixin, models.Model):
         self.name_slug = slugify(self.name)
         super(Collection, self).save(*args, **kwargs)
 
+    @transaction.commit_manually
     def add_user(self, user, is_default=False, is_manager=False):
         """
         Add the user to the current collection.
         """
-        UserCollections.objects.create(collection=self,
+        try:
+            UserCollections.objects.create(collection=self,
                                        user=user,
                                        is_default=is_default,
                                        is_manager=is_manager)
+            transaction.commit()
+        except IntegrityError:
+            transaction.rollback()
+            raise IntegrityError('Integrity error adding an user to a collection.')
+
 
     def remove_user(self, user):
         """
@@ -478,6 +485,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
     subject_categories = models.ManyToManyField(SubjectCategory, verbose_name=_("Subject Categories"), related_name="journals", null=True)
     study_areas = models.ManyToManyField(StudyArea, verbose_name=_("Study Area"), related_name="journals_migration_tmp", null=True)
+    editors = models.ManyToManyField(User, related_name='user_editors', null=True, blank=True)
 
     #Fields
     current_ahead_documents = models.IntegerField(_('Total of ahead of print documents for the current year'), max_length=3, default=0, blank=True, null=True)

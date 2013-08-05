@@ -7,6 +7,8 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
@@ -292,6 +294,85 @@ def user_index(request):
     t = loader.get_template('journalmanager/user_list.html')
     c = RequestContext(request, {
                        'users': users,
+                       })
+    return HttpResponse(t.render(c))
+
+
+@permission_required('auth.change_user', login_url=AUTHZ_REDIRECT_URL)
+def collection_users_index(request, collection_id):
+
+    collection = get_object_or_404(models.Collection, pk=collection_id)
+
+    if not collection.is_managed_by_user(request.user):
+        return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
+
+    col_users = models.User.objects.filter(
+        usercollections__collection__in=[collection]).distinct('username').order_by('username')
+
+    users = get_paginated(col_users, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/collection_users_list.html')
+    c = RequestContext(request, {
+                       'collection_users': users,
+                       'collection': collection
+                       })
+    return HttpResponse(t.render(c))
+
+
+@permission_required('auth.change_user', login_url=AUTHZ_REDIRECT_URL)
+def collection_users_add(request, collection_id, user_id=None):
+
+    collection = get_object_or_404(models.Collection, pk=collection_id)
+
+    if not collection.is_managed_by_user(request.user):
+        return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
+
+    if request.method == 'POST':
+        username = request.POST.get('query')
+        try:
+            user = User.objects.get(username=username)
+            try:
+                collection.add_user(user)
+                messages.error(request, _('Now %s is part of this collection.' % user.username))
+            except IntegrityError:
+                messages.error(request, _('%s is already part of this collection.' % user.username))
+        except ObjectDoesNotExist:
+            messages.error(request, _('User %s does not exists' % username))
+
+
+    col_users = models.User.objects.filter(
+        usercollections__collection__in=[collection]).distinct('username').order_by('username')
+
+    users = get_paginated(col_users, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/collection_users_list.html')
+    c = RequestContext(request, {
+                       'collection_users': users,
+                       'collection': collection
+                       })
+    return HttpResponse(t.render(c))
+
+
+@permission_required('auth.change_user', login_url=AUTHZ_REDIRECT_URL)
+def collection_users_remove(request, collection_id, user_id):
+
+    collection = models.Collection.objects.get(pk=collection_id)
+
+    if not collection.is_managed_by_user(request.user):
+        return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
+
+    collection.remove_user(user_id)
+    messages.error(request, _('The user was removed from this collection.'))
+
+    col_users = models.User.objects.filter(
+        usercollections__collection__in=[collection]).distinct('username').order_by('username')
+
+    users = get_paginated(col_users, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/collection_users_list.html')
+    c = RequestContext(request, {
+                       'collection_users': users,
+                       'collection': collection
                        })
     return HttpResponse(t.render(c))
 
@@ -803,6 +884,25 @@ def trash_listing(request):
 
 
 @login_required
+def ajx_list_users(request):
+    """
+    Lists the users acoording to the a given string.
+    """
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+
+    users = User.objects.all()
+
+    usrs = []
+    for user in users:
+        usrs.append(user.username)
+
+    response_data = json.dumps(usrs)
+
+    return HttpResponse(response_data, mimetype="application/json")
+
+
+@login_required
 def ajx_list_issues_for_markup_files(request):
     """
     Lists the issues of a given journal to be used by the
@@ -833,7 +933,6 @@ def ajx_list_issues_for_markup_files(request):
     for issue in journal_issues:
         text = '{0} - {1}'.format(issue.publication_year, issue.label)
         issues.append({'id': issue.pk, 'text': text})
-
     response_data = json.dumps(issues)
 
     return HttpResponse(response_data, mimetype="application/json")

@@ -17,7 +17,7 @@
         <ul id="site-areas" class="nav">
           <li id="journal-manager" class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              Journal Manager
+              Journals
               <b class="caret"></b>
             </a>
             <ul id="journal-manager-menu" class="dropdown-menu">
@@ -30,13 +30,6 @@
               <li id="sponsors-link">
                 <a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a>
               </li>
-              {% endif %}
-              {% if is_manager_of_default_collection %}
-                {% if perms.auth.change_user %}
-                <li id="users-link">
-                  <a href="{% url user.index %}">{% trans 'Users' %}</a>
-                </li>
-                {% endif %}
               {% endif %}
               <li id="downloads-link" class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -53,12 +46,12 @@
           </li>
           <li id="editor-manager" class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              Editor Manager
+              Editors
               <b class="caret"></b>
             </a>
             <ul id="editor-manager-menu" class="dropdown-menu">
               <li id="editor-manager-journals-link">
-                <a href="{% url journal.index %}">{% trans 'Journals' %}</a>
+                <a href="{% url editor_journal.index %}">{% trans 'My Journals' %}</a>
               </li>
             </ul>
           </li>

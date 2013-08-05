@@ -152,6 +152,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.flatpages',
     'journalmanager',
+    'editormanager',
     'export',
     'accounts',
     'maintenancewindow',

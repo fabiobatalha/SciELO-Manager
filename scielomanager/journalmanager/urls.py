@@ -43,14 +43,6 @@ urlpatterns = patterns('',
     url(r'^issue/(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability,
         {'model': models.Issue}, name='issue.toggle_availability'),
 
-    # Users Tools
-    url(r'^user/$', views.user_index, name="user.index"),
-    url(r'^user/new/$', views.add_user, name="user.add"),
-    url(r'^user/(?P<user_id>\d+)/edit/$', views.add_user, name="user.edit"),
-    url(r'^user/(?P<user_id>\d+)/toggle_availability/$', views.toggle_user_availability, name='user.toggle_availability'),
-    url(r'^user/(?P<user_id>\d+)/toggle_active_collection/(?P<collection_id>\d+)$',
-        views.toggle_active_collection, name='usercollection.toggle_active'),
-
     # Ajax requests
     url(r'^ajx/ajx1/$', views.ajx_list_issues_for_markup_files, name="ajx.list_issues_for_markup_files"),
     url(r'^ajx/ajx2/$', views.ajx_lookup_for_section_translation, name="ajx.lookup_for_section_translation"),

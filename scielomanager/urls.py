@@ -30,13 +30,30 @@ for res in v1_api_resources:
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
 
+    # Editor Manager APP
+    url(r'^ed/', include('scielomanager.editormanager.urls')),
+
     # Journal Manager APP
     url(r'^journal/', include('scielomanager.journalmanager.urls')),
+
+    # Users Manager
+    url(r'^users/$', views.user_index, name="user.index"),
+    url(r'^users/new/$', views.add_user, name="user.add"),
+    url(r'^users/(?P<user_id>\d+)/edit/$', views.add_user, name="user.edit"),
+    url(r'^users/(?P<user_id>\d+)/toggle_availability/$', views.toggle_user_availability, name='user.toggle_availability'),
+    url(r'^users/(?P<user_id>\d+)/toggle_active_collection/(?P<collection_id>\d+)$',
+        views.toggle_active_collection, name='usercollection.toggle_active'),
+
+    # SciELO Manager Project
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
 
     # Collection Tools
     url(r'^collection/$', views.collection_index, {'model': models.Collection}, name='collection.index'),
+    url(r'^collection/(?P<collection_id>\d+)/users$', views.collection_users_index, name='collection_users.index'),
+    url(r'^collection/(?P<collection_id>\d+)/users/new/$', views.collection_users_add, name='collection_users.add'),
+    url(r'^collection/(?P<collection_id>\d+)/users/(?P<user_id>\d+)/edit/$', views.collection_users_add, name='collection_users.edit'),
+    url(r'^collection/(?P<collection_id>\d+)/users/(?P<user_id>\d+)/remove/$', views.collection_users_remove, name='collection_users.remove'),
     url(r'^collection/new/$', views.add_collection, name='collection.add'),
     url(r'^collection/(?P<collection_id>\d+)/edit/$', views.add_collection, name='collection.edit'),
 
@@ -53,6 +70,9 @@ urlpatterns = patterns('',
     (r'^api/', include(v1_api.urls)),
 
     (r'^export/', include('scielomanager.export.urls')),
+
+    #AJAX 
+    url(r'^ajx/ajx3/$', views.ajx_list_users, name="ajx.ajx_list_users"),
 )
 
 if settings.DEBUG:

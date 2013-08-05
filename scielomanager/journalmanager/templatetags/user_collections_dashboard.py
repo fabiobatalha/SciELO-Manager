@@ -17,6 +17,9 @@ def user_collections_dashboard(collections, user):
         edit_url = reverse('collection.edit', args=[collection.pk])
         edit_label = _('Edit')
 
+        edit_users_url = reverse('collection_users.index', args=[collection.pk])
+        edit_users_label = _('Team')
+
         activation_label = _('Activate')
         activation_url = reverse('usercollection.toggle_active',
             args=[user.pk, collection.pk])
@@ -49,6 +52,14 @@ def user_collections_dashboard(collections, user):
                                             edit_label=edit_label,
                                             lowercase_name=name.lower()
                                             ).strip()
+            html_edit += u"""<li id="edit-users-{lowercase_name}">
+                              <a href="{edit_users_url}">
+                                <i class="icon-edit"></i> {edit_users_label}
+                              </a>
+                            </li>""".format(edit_users_url=edit_users_url,
+                                            edit_users_label=edit_users_label,
+                                            lowercase_name=name.lower()
+                                            ).strip()
         else:
             html_edit = u"""<li class="disabled" id="edit-{lowercase_name}">
                               <i class="icon-edit"></i> {edit_label}
@@ -57,6 +68,12 @@ def user_collections_dashboard(collections, user):
                                             lowercase_name=name.lower(),
                                             ).strip()
 
+            html_edit += u"""<li class="disabled" id="edit-users-{lowercase_name}">
+                                <i class="icon-edit"></i> {edit_users_label}
+                            </li>""".format(edit_users_url=edit_users_url,
+                                            edit_users_label=edit_users_label,
+                                            lowercase_name=name.lower()
+                                            ).strip()
 
         html_snippet = u"""
         <li id="{lowercase_name}" class="{classname}">
